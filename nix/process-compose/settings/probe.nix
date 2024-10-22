@@ -1,71 +1,114 @@
 { lib, ... }:
+/*
+  https://github.com/F1bonacc1/process-compose/blob/6b724f8d2bc3ad0308b2462c47ff2f55cb893199/src/health/probe.go#L10-L31
 
+  type Probe struct {
+  Exec             *ExecProbe `yaml:"exec,omitempty"`
+  HttpGet          *HttpProbe `yaml:"http_get,omitempty"`
+  InitialDelay     int        `yaml:"initial_delay_seconds,omitempty"`
+  PeriodSeconds    int        `yaml:"period_seconds,omitempty"`
+  TimeoutSeconds   int        `yaml:"timeout_seconds,omitempty"`
+  SuccessThreshold int        `yaml:"success_threshold,omitempty"`
+  FailureThreshold int        `yaml:"failure_threshold,omitempty"`
+  }
+
+
+  type ExecProbe struct {
+  Command    string `yaml:"command,omitempty"`
+  WorkingDir string `yaml:"working_dir,omitempty"`
+  }
+
+
+  type HttpProbe struct {
+  Host    string `yaml:"host,omitempty"`
+  Path    string `yaml:"path,omitempty"`
+  Scheme  string `yaml:"scheme,omitempty"`
+  Port    string `yaml:"port,omitempty"`
+  NumPort int    `yaml:"num_port,omitempty"`
+  }
+
+*/
 let
   inherit (lib) types mkOption;
+
+  http_get_options =
+    {
+      options = {
+        host = mkOption {
+          type = types.str;
+          example = "google.com";
+          description = ''
+            The host address which `process-compose` uses to probe the process.
+          '';
+        };
+        path = mkOption {
+          type = types.str;
+          default = "/";
+          example = "/";
+          description = ''
+            The path to the healtcheck endpoint.
+          '';
+        };
+        scheme = mkOption {
+          type = types.str;
+          default = "http";
+          example = "http";
+          description = ''
+            The protocol used to probe the process listening on `host`.
+          '';
+        };
+        port = mkOption {
+          type = types.port;
+          example = "8080";
+          description = ''
+            Which port to probe the process on.
+          '';
+        };
+        num_port = mkOption {
+          type = types.int;
+          default = null;
+          example = 8080;
+          description = ''
+            Which port to probe the process on.
+          '';
+        };
+      };
+    };
+
+  exec_options = {
+    options = {
+      command = mkOption {
+        type = types.str;
+        example = "ps -ef | grep -v grep | grep my-proccess";
+        description = ''
+          The command to execute
+        '';
+      };
+      working_dir = mkOption {
+        type = types.str;
+        default = null;
+        example = "/tmp";
+        description = ''
+          The working directory to execute the command in.
+        '';
+      };
+    };
+  };
 in
 {
   options = {
-    failure_threshold = mkOption {
-      type = types.ints.unsigned;
-      default = 3;
-      example = 3;
-      description = ''
-        Number of times to fail before giving up on restarting the process.
-      '';
-    };
-    http_get = mkOption {
-      description = ''
-        URL to determine the health of the process.
-      '';
-      type = types.nullOr (types.submodule {
-        options = {
-          host = mkOption {
-            type = types.str;
-            example = "google.com";
-            description = ''
-              The host address which `process-compose` uses to probe the process.
-            '';
-          };
-          scheme = mkOption {
-            type = types.str;
-            default = "http";
-            example = "http";
-            description = ''
-              The protocol used to probe the process listening on `host`.
-            '';
-          };
-          path = mkOption {
-            type = types.str;
-            default = "/";
-            example = "/";
-            description = ''
-              The path to the healtcheck endpoint.
-            '';
-          };
-          port = mkOption {
-            type = types.port;
-            example = "8080";
-            description = ''
-              Which port to probe the process on.
-            '';
-          };
-        };
-      });
-      default = null;
-    };
     exec = mkOption {
-      type = types.nullOr (types.submodule {
-        options.command = mkOption {
-          type = types.str;
-          example = "ps -ef | grep -v grep | grep my-proccess";
-          description = ''
-            The command to execute in order to check the health of the process.
-          '';
-        };
-      });
+      type = types.nullOr (types.submodule exec_options);
       default = null;
       description = ''
         Execution settings.
+      '';
+    };
+    http_get = mkOption {
+      type = types.nullOr (types.submodule http_get_options);
+      default = null;
+      description = ''
+        URL to determine the health of the process.
       '';
     };
     initial_delay_seconds = mkOption {
@@ -81,7 +124,15 @@ in
       default = 10;
       example = 10;
       description = ''
-        Check the health every `period_seconds`. 
+        Check the health every `period_seconds`.
+      '';
+    };
+    timeout_seconds = mkOption {
+      type = types.ints.unsigned;
+      default = 3;
+      example = 3;
+      description = ''
+        How long to wait for a given probe request.
       '';
     };
     success_threshold = mkOption {
@@ -92,12 +143,12 @@ in
         Number of successful checks before marking the process `Ready`.
       '';
     };
-    timeout_seconds = mkOption {
+    failure_threshold = mkOption {
       type = types.ints.unsigned;
       default = 3;
       example = 3;
       description = ''
-        How long to wait for a given probe request.
+        Number of times to fail before giving up on restarting the process.
       '';
     };
   };

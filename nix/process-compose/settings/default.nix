@@ -1,4 +1,29 @@
 { name, config, pkgs, lib, ... }:
+
+/*
+
+  type Vars map[string]any
+
+  type Project struct {
+  	Version             string               `yaml:"version"`
+  	LogLocation         string               `yaml:"log_location,omitempty"`
+  	LogLevel            string               `yaml:"log_level,omitempty"`
+  	LogLength           int                  `yaml:"log_length,omitempty"`
+  	LoggerConfig        *LoggerConfig        `yaml:"log_configuration,omitempty"`
+  	LogFormat           string               `yaml:"log_format,omitempty"`
+  	Processes           Processes            `yaml:"processes"`
+  	Environment         Environment          `yaml:"environment,omitempty"`
+  	ShellConfig         *command.ShellConfig `yaml:"shell,omitempty"`
+  	IsStrict            bool                 `yaml:"is_strict"`
+  	Vars                Vars                 `yaml:"vars"`
+  	DisableEnvExpansion bool                 `yaml:"disable_env_expansion"`
+  	IsTuiDisabled       bool                 `yaml:"is_tui_disabled"`
+  	FileNames           []string
+  	EnvFileNames        []string
+  }
+
+*/
+
 let
   inherit (lib) types mkOption literalExpression;
 in
@@ -9,24 +34,24 @@ in
       type = types.submoduleWith {
         modules = [{
           options = {
-            processes = mkOption {
-              type = types.attrsOf (types.submoduleWith { modules = [ ./process.nix ]; });
-              default = { };
-              description = ''
-                A map of process names to their configuration.
-              '';
-            };
-
-            environment = import ./environment.nix { inherit lib; };
-
-            log_length = mkOption {
-              type = types.nullOr types.ints.unsigned;
+            version = mkOption {
+              type = types.nullOr types.str;
               default = null;
-              example = 3000;
+              example = "0.5";
               description = ''
-                Log length to display in TUI mode.
+                Version of the process-compose configuration.
               '';
             };
+
+            log_location = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              example = "./pc.log";
+              description = ''
+                File to write the logs to.
+              '';
+            };
+
             log_level = mkOption {
               type = types.nullOr (types.enum [
                 "trace"
@@ -43,43 +68,86 @@ in
                 Level of logs to output.
               '';
             };
-            log_location = mkOption {
-              type = types.nullOr types.str;
+
+            log_length = mkOption {
+              type = types.nullOr types.ints.unsigned;
               default = null;
-              example = "./pc.log";
+              example = 3000;
               description = ''
-                File to write the logs to.
+                Log length to display in TUI mode.
               '';
             };
 
-            shell = {
-              shell_argument = mkOption {
-                type = types.str;
-                default = "-c";
-                example = "-c";
-                description = ''
-                  Arguments to pass to the shell given by `shell_command`.
-                '';
-              };
-              shell_command = mkOption {
-                type = types.str;
-                description = ''
-                  The shell to use to run the process `command`s.
-
-                  For reproducibility across systems, by default this uses
-                  `pkgs.bash`.
-                '';
-                default = lib.getExe pkgs.bash;
-                defaultText = "lib.getExe pkgs.bash";
-              };
+            log_configuration = mkOption {
+              type = types.nullOr (types.submoduleWith {
+                specialArgs = { inherit lib; };
+                modules = [ ./logger.nix ];
+              });
+              default = null;
+              description = ''
+                The logger configuration for the process.
+              '';
             };
 
-            version = mkOption {
+            log_format = mkOption {
               type = types.nullOr types.str;
               default = null;
-              example = "0.5";
+              example = "json";
               description = ''
-                Version of the process-compose configuration.
+                Format of the logs.
+              '';
+            };
+
+            processes = mkOption {
+              type = types.attrsOf (types.submoduleWith { modules = [ ./process.nix ]; });
+              default = { };
+              description = ''
+                A map of process names to their configuration.
+              '';
+            };
+
+            environment = import ./environment.nix { inherit lib; };
+
+            shell = mkOption {
+              type = types.nullOr (types.submoduleWith {
+                specialArgs = { inherit lib; };
+                modules = [ ./shell_config.nix ];
+              });
+              default = null;
+              description = ''
+                The shell configuration for the process.
+              '';
+            };
+
+            is_strict = mkOption {
+              type = types.bool;
+              default = false;
+              description = ''
+                If true, process-compose will exit on the first error.
+              '';
+            };
+
+            vars = mkOption {
+              type = types.attrsOf types.any;
+              default = { };
+              description = ''
+                Variables to be used in the process configuration.
+              '';
+            };
+
+            disable_env_expansion = mkOption {
+              type = types.bool;
+              default = false;
+              description = ''
+                If true, environment variables will not be expanded.
+              '';
+            };
+
+            is_tui_disabled = mkOption {
+              type = types.bool;
+              default = false;
+              description = ''
+                If true, the TUI will be disabled.
               '';
             };
           };
@@ -104,6 +172,7 @@ in
         Which runs process-compose with the declared config.
       '';
     };
+
     outputs.settingsFile = mkOption {
       type = types.attrsOf types.raw;
       internal = true;
@@ -119,18 +188,47 @@ in
   };
   config.outputs =
     let
+      inherit (lib) mapAttrs recursiveUpdate filterAttrsRecursive pipe updateManyAttrsByPath;
+
+      # Helper function to merge two attribute sets
+      mergeAttrs = a: b: recursiveUpdate a b;
+
+      # Function to process extensions
+      processExtensions = attrs:
+        let
+          processAttr = name: value:
+            if builtins.isAttrs value then
+              let
+                extensions = value.extensions or { };
+                cleanValue = removeAttrs value [ "extensions" ];
+                processedValue = processExtensions cleanValue;
+                result = mergeAttrs processedValue extensions;
+              in
+              if builtins.isAttrs result then processExtensions result else result
+            else
+              value;
+        in
+        mapAttrs processAttr attrs;
+
       removeNullAndEmptyAttrs = attrs:
         let
-          f = lib.filterAttrsRecursive (key: value: value != null && value != { });
-          # filterAttrsRecursive doesn't delete the *resulting* empty attrs, so we must
-          # evaluate it again and to get rid of it.
+          f = filterAttrsRecursive (key: value: value != null && value != { });
         in
-        lib.pipe attrs [ f f ];
+        pipe attrs [ f f ];
+
       toPCJson = attrs:
         pkgs.writeTextFile {
           name = "process-compose-${name}.json";
           text = builtins.toJSON attrs;
         };
+
+      # Function to apply all transformations
+      applyTransformations = attrs:
+        pipe attrs [
+          processExtensions
+          removeNullAndEmptyAttrs
+        ];
+
     in
     {
       settingsFile = toPCJson (removeNullAndEmptyAttrs config.settings);
@@ -144,4 +242,3 @@ in
           config.settings));
     };
 }
-
