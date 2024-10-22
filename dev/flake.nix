@@ -18,6 +18,9 @@
           programs = {
             nixpkgs-fmt.enable = true;
           };
+          settings = {
+            excludes = [ ".git" ];
+          };
         };
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [

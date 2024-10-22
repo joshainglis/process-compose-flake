@@ -19,7 +19,7 @@ in
           default = false;
         };
         port = mkOption {
-          type = types.nullOr types.int;
+          type = types.nullOr types.ints.u16;
           default = null;
         };
         read-only = mkOption {
