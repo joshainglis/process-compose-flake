@@ -17,6 +17,5 @@ in
         The condition the parent process must be in before starting the current one.
       '';
     };
-    extensions = import ./extensions.nix { inherit lib; };
   };
 }

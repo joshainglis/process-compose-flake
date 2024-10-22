@@ -45,47 +45,18 @@ in
   };
   config.outputs =
     let
-      inherit (lib) mapAttrs recursiveUpdate filterAttrsRecursive pipe updateManyAttrsByPath;
-
-      # Helper function to merge two attribute sets
-      mergeAttrs = a: b: recursiveUpdate a b;
-
-      # Function to process extensions
-      processExtensions = attrs:
-        let
-          processAttr = name: value:
-            if builtins.isAttrs value then
-              let
-                extensions = value.extensions or { };
-                cleanValue = removeAttrs value [ "extensions" ];
-                processedValue = processExtensions cleanValue;
-                result = mergeAttrs processedValue extensions;
-              in
-              if builtins.isAttrs result then processExtensions result else result
-            else
-              value;
-        in
-        mapAttrs processAttr attrs;
-
       removeNullAndEmptyAttrs = attrs:
         let
-          f = filterAttrsRecursive (key: value: value != null && value != { });
+          f = lib.filterAttrsRecursive (key: value: value != null && value != { });
+          # filterAttrsRecursive doesn't delete the *resulting* empty attrs, so we must
+          # evaluate it again and to get rid of it.
         in
-        pipe attrs [ f f ];
-
+        lib.pipe attrs [ f f ];
       toPCJson = attrs:
         pkgs.writeTextFile {
           name = "process-compose-${name}.json";
           text = builtins.toJSON attrs;
         };
-
-      # Function to apply all transformations
-      applyTransformations = attrs:
-        pipe attrs [
-          processExtensions
-          removeNullAndEmptyAttrs
-        ];
-
     in
     {
       settingsFile = toPCJson (removeNullAndEmptyAttrs config.settings);

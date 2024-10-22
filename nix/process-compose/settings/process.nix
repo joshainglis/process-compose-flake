@@ -191,8 +191,6 @@ in
       '';
     };
 
-    extensions = import ./extensions.nix { inherit lib; };
-
     description = mkOption {
       type = types.nullOr types.str;
       default = null;
