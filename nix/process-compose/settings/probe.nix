@@ -6,14 +6,14 @@ let
     {
       options = {
         host = mkOption {
-          type = types.str;
+          type = types.nullOr types.str;
           example = "google.com";
           description = ''
             The host address which `process-compose` uses to probe the process.
           '';
         };
         path = mkOption {
-          type = types.str;
+          type = types.nullOr types.str;
           default = "/";
           example = "/";
           description = ''
@@ -21,7 +21,7 @@ let
           '';
         };
         scheme = mkOption {
-          type = types.str;
+          type = types.nullOr types.str;
           default = "http";
           example = "http";
           description = ''
@@ -29,14 +29,14 @@ let
           '';
         };
         port = mkOption {
-          type = types.port;
+          type = types.nullOr types.port;
           example = "8080";
           description = ''
             Which port to probe the process on.
           '';
         };
         num_port = mkOption {
-          type = types.int;
+          type = types.nullOr types.ints.u16;
           default = null;
           example = 8080;
           description = ''
@@ -49,14 +49,14 @@ let
   exec_options = {
     options = {
       command = mkOption {
-        type = types.str;
+        type = types.nullOr types.str;
         example = "ps -ef | grep -v grep | grep my-proccess";
         description = ''
           The command to execute
         '';
       };
       working_dir = mkOption {
-        type = types.str;
+        type = types.nullOr types.str;
         default = null;
         example = "/tmp";
         description = ''
@@ -83,7 +83,7 @@ in
       '';
     };
     initial_delay_seconds = mkOption {
-      type = types.ints.unsigned;
+      type = types.nullOr types.ints.unsigned;
       default = 0;
       example = 0;
       description = ''
@@ -91,7 +91,7 @@ in
       '';
     };
     period_seconds = mkOption {
-      type = types.ints.unsigned;
+      type = types.nullOr types.ints.unsigned;
       default = 10;
       example = 10;
       description = ''
@@ -99,7 +99,7 @@ in
       '';
     };
     timeout_seconds = mkOption {
-      type = types.ints.unsigned;
+      type = types.nullOr types.ints.unsigned;
       default = 3;
       example = 3;
       description = ''
@@ -107,7 +107,7 @@ in
       '';
     };
     success_threshold = mkOption {
-      type = types.ints.unsigned;
+      type = types.nullOr types.ints.unsigned;
       default = 1;
       example = 1;
       description = ''
@@ -115,7 +115,7 @@ in
       '';
     };
     failure_threshold = mkOption {
-      type = types.ints.unsigned;
+      type = types.nullOr types.ints.unsigned;
       default = 3;
       example = 3;
       description = ''

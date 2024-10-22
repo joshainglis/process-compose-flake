@@ -41,7 +41,7 @@ in
     };
 
     entrypoint = mkOption {
-      type = types.nullOr types.listOf types.str;
+      type = types.nullOr (types.listOf types.str);
       default = null;
       example = [ "/bin/sh" "-c" ];
       description = ''

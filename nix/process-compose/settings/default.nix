@@ -103,7 +103,7 @@ in
             };
 
             vars = mkOption {
-              type = types.attrsOf types.any;
+              type = types.attrsOf types.anything;
               default = { };
               description = ''
                 Variables to be used in the process configuration.
