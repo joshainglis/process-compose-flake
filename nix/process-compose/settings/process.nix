@@ -118,11 +118,40 @@ in
       });
       default = null;
       description = ''
-        The logger configuration for the process.
+        The availability configuration for the process.
+        This defines the restart policy of the process.
       '';
     };
 
-    depends_on = import ./depends_on.nix { inherit lib; };
+    depends_on = mkOption {
+      type = types.attrsOf (types.submoduleWith { modules = [ ./depends_on.nix ]; });
+      default = { };
+      description = ''
+        The dependencies of the process.
+      '';
+      example = {
+        "process1" = {
+          condition = "process_completed";
+        };
+        "process2" = {
+          condition = "process_healthy";
+          extensions = {
+            "x-custom-key" = "custom-value";
+          };
+        };
+        description = ''
+          DependsOn is a map of process names to their dependencies. The key is the name of the process that depends on another process. The value is an object with the following fields:
+
+          - condition: The condition to wait for. It can be one of the following:
+            - process_completed: Wait until the process has completed (any exit code).
+            - process_completed_successfully: Wait until the process has completed successfully (exit code 0).
+            - process_healthy: Wait until the process is healthy.
+            - process_started: Wait until the process has started (default).
+            - process_log_ready: Wait until the process has printed a predefined log line
+          - extensions: Extension configuration for the dependency. This is an object with arbitrary keys and values. The keys must start with "x-" to avoid conflicts with future versions of Process Compose.
+        '';
+      };
+    };
 
     liveness_probe = mkOption {
       type = types.nullOr probeType;
