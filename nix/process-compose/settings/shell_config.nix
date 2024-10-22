@@ -1,4 +1,4 @@
-{ lib, bash, ... }:
+{ lib, bash, sudo, ... }:
 let
   inherit (lib) types mkOption getExe;
 in
@@ -33,8 +33,17 @@ in
         For reproducibility across systems, by default this uses
         `pkgs.bash`.
       '';
-      default = getExe bash;
-      defaultText = "lib.getExe pkgs.bash";
+      default = getExe sudo;
+      defaultText = "lib.getExe pkgs.sudo";
+    };
+
+    elevated_shell_argument = mkOption {
+      type = types.str;
+      default = "-S";
+      example = "-S";
+      description = ''
+        Arguments to pass to the elevated shell given by `elevated_shell_command`.
+      '';
     };
   };
 }

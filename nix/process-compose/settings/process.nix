@@ -84,7 +84,10 @@ in
     };
 
     depends_on = mkOption {
-      type = types.attrsOf (types.submoduleWith { modules = [ ./depends_on.nix ]; });
+      type = types.attrsOf (types.submoduleWith {
+        specialArgs = { inherit lib; };
+        modules = [ ./depends_on.nix ];
+      });
       default = { };
       description = ''
         The dependencies of the process.

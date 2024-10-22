@@ -13,7 +13,7 @@ in
     };
 
     fields_order = mkOption {
-      type = types.listOf types.str;
+      type = types.nullOr (types.listOf types.str);
       example = [ "timestamp" "level" "msg" ];
       description = ''
         FieldsOrder is the order in which fields are logged
@@ -31,6 +31,7 @@ in
 
     timestamp_format = mkOption {
       type = types.str;
+      default = "2006-01-02T15:04:05.000Z07:00";
       example = "2006-01-02T15:04:05.000Z07:00";
       description = ''
         TimestampFormat is the format of the timestamp

@@ -13,7 +13,7 @@ in
     };
 
     backoff_seconds = mkOption {
-      type = types.ints.unsigned;
+      type = types.nullOr types.ints.unsigned;
       example = 5;
       description = ''
         BackoffSeconds is the number of seconds to wait before restarting
@@ -21,7 +21,7 @@ in
     };
 
     max_restarts = mkOption {
-      type = types.ints.unsigned;
+      type = types.nullOr types.ints.unsigned;
       example = 5;
       description = ''
         MaxRestarts is the maximum number of restarts before giving up
@@ -29,7 +29,7 @@ in
     };
 
     exit_on_end = mkOption {
-      type = types.bool;
+      type = types.nullOr types.bool;
       example = true;
       description = ''
         ExitOnEnd exits the process when it ends
@@ -37,7 +37,7 @@ in
     };
 
     exit_on_skipped = mkOption {
-      type = types.bool;
+      type = types.nullOr types.bool;
       example = true;
       description = ''
         ExitOnSkipped exits the process when it is skipped
