@@ -1,33 +1,4 @@
 { lib, ... }:
-/*
-   https://github.com/F1bonacc1/process-compose/blob/6b724f8d2bc3ad0308b2462c47ff2f55cb893199/src/types/logger.go#L20-L37
-
-  type LoggerConfig struct {
-      // Rotation is the configuration for logging rotation
-      Rotation *LogRotationConfig `yaml:"rotation"`
-
-      // FieldsOrder is the order in which fields are logged
-      FieldsOrder []string `yaml:"fields_order,omitempty"`
-
-      // DisableJSON disables log JSON formatting
-      DisableJSON bool `yaml:"disable_json"`
-
-      // TimestampFormat is the format of the timestamp
-      TimestampFormat string `yaml:"timestamp_format"`
-
-      // NoColor disables coloring
-      NoColor bool `yaml:"no_color"`
-
-      // NoMetadata disables log metadata (process, replica)
-      NoMetadata bool `yaml:"no_metadata"`
-
-      // AddTimestamp adds timestamp to log
-      AddTimestamp bool `yaml:"add_timestamp"`
-
-      // FlushEachLine flushes the logger on each line
-      FlushEachLine bool `yaml:"flush_each_line"`
-  }
-*/
 let
   inherit (lib) types mkOption;
 in

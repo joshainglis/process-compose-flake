@@ -1,44 +1,4 @@
 { name, lib, ... }:
-/*
-  https://github.com/F1bonacc1/process-compose/blob/6b724f8d2bc3ad0308b2462c47ff2f55cb893199/src/types/process.go#L20-L49
-
-  type Vars map[string]any
-
-  type Processes map[string]ProcessConfig
-  type Environment []string
-
-  type ProcessConfig struct {
-  Name              string
-  Disabled          bool                   `yaml:"disabled,omitempty"`
-  IsDaemon          bool                   `yaml:"is_daemon,omitempty"`
-  Command           string                 `yaml:"command"`
-  Entrypoint        []string               `yaml:"entrypoint,omitempty"`
-  LogLocation       string                 `yaml:"log_location,omitempty"`
-  LoggerConfig      *LoggerConfig          `yaml:"log_configuration,omitempty"`
-  Environment       Environment            `yaml:"environment,omitempty"`
-  RestartPolicy     RestartPolicyConfig    `yaml:"availability,omitempty"`
-  DependsOn         DependsOnConfig        `yaml:"depends_on,omitempty"`
-  LivenessProbe     *health.Probe          `yaml:"liveness_probe,omitempty"`
-  ReadinessProbe    *health.Probe          `yaml:"readiness_probe,omitempty"`
-  ReadyLogLine      string                 `yaml:"ready_log_line,omitempty"`
-  ShutDownParams    ShutDownParams         `yaml:"shutdown,omitempty"`
-  DisableAnsiColors bool                   `yaml:"disable_ansi_colors,omitempty"`
-  WorkingDir        string                 `yaml:"working_dir"`
-  Namespace         string                 `yaml:"namespace"`
-  Replicas          int                    `yaml:"replicas"`
-  Extensions        map[string]interface{} `yaml:",inline"`
-  Description       string                 `yaml:"description,omitempty"`
-  Vars              Vars                   `yaml:"vars,omitempty"`
-  IsForeground      bool                   `yaml:"is_foreground"`
-  IsTty             bool                   `yaml:"is_tty"`
-  IsElevated        bool                   `yaml:"is_elevated"`
-  ReplicaNum        int
-  ReplicaName       string
-  Executable        string
-  Args              []string
-  }
-*/
-
 let
   inherit (lib) types mkOption;
   probeType = types.submoduleWith {

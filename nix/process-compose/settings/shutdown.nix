@@ -1,18 +1,5 @@
 { lib, ... }:
 
-/*
-  https://github.com/F1bonacc1/process-compose/blob/6b724f8d2bc3ad0308b2462c47ff2f55cb893199/src/types/process.go#L263-L268
-
-  type ShutDownParams struct {
-  ShutDownCommand string `yaml:"command,omitempty"`
-  ShutDownTimeout int    `yaml:"timeout_seconds,omitempty"`
-  Signal          int    `yaml:"signal,omitempty"`
-  ParentOnly      bool   `yaml:"parent_only,omitempty"`
-  }
-
-*/
-
-
 let
   inherit (lib) types mkOption;
 in

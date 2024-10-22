@@ -1,15 +1,4 @@
 { lib, ... }:
-/*
-  https://github.com/F1bonacc1/process-compose/blob/6b724f8d2bc3ad0308b2462c47ff2f55cb893199/src/types/process.go#L255-L261
-
-  type RestartPolicyConfig struct {
-  Restart        string `yaml:",omitempty"`
-  BackoffSeconds int    `yaml:"backoff_seconds,omitempty"`
-  MaxRestarts    int    `yaml:"max_restarts,omitempty"`
-  ExitOnEnd      bool   `yaml:"exit_on_end,omitempty"`
-  ExitOnSkipped  bool   `yaml:"exit_on_skipped,omitempty"`
-  }
-*/
 let
   inherit (lib) types mkOption;
 in

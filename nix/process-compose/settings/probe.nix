@@ -1,33 +1,4 @@
 { lib, ... }:
-/*
-  https://github.com/F1bonacc1/process-compose/blob/6b724f8d2bc3ad0308b2462c47ff2f55cb893199/src/health/probe.go#L10-L31
-
-  type Probe struct {
-  Exec             *ExecProbe `yaml:"exec,omitempty"`
-  HttpGet          *HttpProbe `yaml:"http_get,omitempty"`
-  InitialDelay     int        `yaml:"initial_delay_seconds,omitempty"`
-  PeriodSeconds    int        `yaml:"period_seconds,omitempty"`
-  TimeoutSeconds   int        `yaml:"timeout_seconds,omitempty"`
-  SuccessThreshold int        `yaml:"success_threshold,omitempty"`
-  FailureThreshold int        `yaml:"failure_threshold,omitempty"`
-  }
-
-
-  type ExecProbe struct {
-  Command    string `yaml:"command,omitempty"`
-  WorkingDir string `yaml:"working_dir,omitempty"`
-  }
-
-
-  type HttpProbe struct {
-  Host    string `yaml:"host,omitempty"`
-  Path    string `yaml:"path,omitempty"`
-  Scheme  string `yaml:"scheme,omitempty"`
-  Port    string `yaml:"port,omitempty"`
-  NumPort int    `yaml:"num_port,omitempty"`
-  }
-
-*/
 let
   inherit (lib) types mkOption;
 
