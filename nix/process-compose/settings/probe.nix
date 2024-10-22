@@ -7,6 +7,7 @@ let
       options = {
         host = mkOption {
           type = types.nullOr types.str;
+          default = null;
           example = "google.com";
           description = ''
             The host address which `process-compose` uses to probe the process.
@@ -14,7 +15,7 @@ let
         };
         path = mkOption {
           type = types.nullOr types.str;
-          default = "/";
+          default = null;
           example = "/";
           description = ''
             The path to the healtcheck endpoint.
@@ -22,7 +23,7 @@ let
         };
         scheme = mkOption {
           type = types.nullOr types.str;
-          default = "http";
+          default = null;
           example = "http";
           description = ''
             The protocol used to probe the process listening on `host`.
@@ -30,6 +31,7 @@ let
         };
         port = mkOption {
           type = types.nullOr types.port;
+          default = null;
           example = "8080";
           description = ''
             Which port to probe the process on.
@@ -50,6 +52,7 @@ let
     options = {
       command = mkOption {
         type = types.nullOr types.str;
+        default = null;
         example = "ps -ef | grep -v grep | grep my-proccess";
         description = ''
           The command to execute
@@ -84,7 +87,7 @@ in
     };
     initial_delay_seconds = mkOption {
       type = types.nullOr types.ints.unsigned;
-      default = 0;
+      default = null;
       example = 0;
       description = ''
         Wait for `initial_delay_seconds` before starting the probe/healthcheck.
@@ -92,7 +95,7 @@ in
     };
     period_seconds = mkOption {
       type = types.nullOr types.ints.unsigned;
-      default = 10;
+      default = null;
       example = 10;
       description = ''
         Check the health every `period_seconds`.
@@ -100,7 +103,7 @@ in
     };
     timeout_seconds = mkOption {
       type = types.nullOr types.ints.unsigned;
-      default = 3;
+      default = null;
       example = 3;
       description = ''
         How long to wait for a given probe request.
@@ -108,7 +111,7 @@ in
     };
     success_threshold = mkOption {
       type = types.nullOr types.ints.unsigned;
-      default = 1;
+      default = null;
       example = 1;
       description = ''
         Number of successful checks before marking the process `Ready`.
@@ -116,7 +119,7 @@ in
     };
     failure_threshold = mkOption {
       type = types.nullOr types.ints.unsigned;
-      default = 3;
+      default = null;
       example = 3;
       description = ''
         Number of times to fail before giving up on restarting the process.

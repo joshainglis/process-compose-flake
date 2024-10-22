@@ -12,6 +12,7 @@ in
         "process_started"
         "process_log_ready"
       ]);
+      default = null;
       example = "process_healthy";
       description = ''
         The condition the parent process must be in before starting the current one.

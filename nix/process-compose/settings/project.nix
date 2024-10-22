@@ -93,7 +93,7 @@ in
     };
 
     is_strict = mkOption {
-      type = types.bool;
+      type = types.nullOr types.bool;
       default = false;
       description = ''
         If true, process-compose will exit on the first error.
@@ -101,24 +101,24 @@ in
     };
 
     vars = mkOption {
-      type = types.attrsOf types.anything;
-      default = { };
+      type = types.nullOr (types.attrsOf types.anything);
+      default = null;
       description = ''
         Variables to be used in the process configuration.
       '';
     };
 
     disable_env_expansion = mkOption {
-      type = types.bool;
-      default = false;
+      type = types.nullOr types.bool;
+      default = null;
       description = ''
         If true, environment variables will not be expanded.
       '';
     };
 
     is_tui_disabled = mkOption {
-      type = types.bool;
-      default = false;
+      type = types.nullOr types.bool;
+      default = null;
       description = ''
         If true, the TUI will be disabled.
       '';
