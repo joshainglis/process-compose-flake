@@ -5,7 +5,12 @@ in
 {
   options = {
     restart = mkOption {
-      type = types.nullOr types.str;
+      type = types.nullOr (types.enum [
+        "no"
+        "always"
+        "on_failure"
+        "exit_on_failure"
+      ]);
       example = "always";
       description = ''
         Restart is the restart policy for the process

@@ -247,37 +247,5 @@ in
         Run the process with elevated privileges.
       '';
     };
-
-    replica_num = mkOption {
-      type = types.ints.unsigned;
-      default = 0;
-      description = ''
-        The replica number of the process.
-      '';
-    };
-
-    replica_name = mkOption {
-      type = types.str;
-      default = "";
-      description = ''
-        The replica name of the process.
-      '';
-    };
-
-    executable = mkOption {
-      type = types.str;
-      default = "";
-      description = ''
-        The executable of the process.
-      '';
-    };
-
-    args = mkOption {
-      type = types.listOf types.str;
-      default = [ ];
-      description = ''
-        The arguments of the process.
-      '';
-    };
   };
 }

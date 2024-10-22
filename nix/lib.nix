@@ -29,7 +29,7 @@ rec {
     else builtins.foldl' (x: y: x // y) { } (builtins.map parseEnv l);
 
   types = {
-    command = import ./process-compose/setting/command.nix { inherit lib; };
+    command = import ./process-compose/settings/command.nix { inherit lib; };
   };
 
   # Run the process-compose-module stand-alone, without flake-parts
